@@ -1,0 +1,10 @@
+source,target,type
+__tests__/deps/e.js,__tests__/deps/f.js,depend
+__tests__/deps/f.js,__tests__/deps/g.js,depend
+__tests__/deps/g.js,__tests__/deps/e.js,depend
+__tests__/deps/f.js,__tests__/deps/g.js,depend
+__tests__/deps/g.js,__tests__/deps/e.js,depend
+__tests__/deps/e.js,__tests__/deps/f.js,depend
+__tests__/deps/g.js,__tests__/deps/e.js,depend
+__tests__/deps/e.js,__tests__/deps/f.js,depend
+__tests__/deps/f.js,__tests__/deps/g.js,depend
