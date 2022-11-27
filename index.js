@@ -2,44 +2,7 @@ let path = require('path')
 let extend = require('util')._extend
 let BASE_ERROR = 'Circular dependency detected:\r\n'
 let PluginTitle = 'CircularDependencyPlugin'
-const http = require('http')
 const fs = require('fs')
-
-async function startServer(port) {
-  const types = {
-    html: 'text/html',
-    css: 'text/css',
-    csv: 'text/csv',
-    js: 'application/javascript',
-    png: 'image/png',
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    gif: 'image/gif',
-    json: 'application/json',
-    xml: 'application/xml'
-  }
-  const server = http.createServer((req, res) => {
-    const extension = path.extname(req.url).slice(1)
-    const type = extension ? types[extension] : types.html
-    const supportedExtension = Boolean(type)
-    if (!supportedExtension) {
-      res.writeHead(404, { 'Content-Type': 'text/html' })
-      res.end('404: File not found')
-      return
-    }
-
-    let fileName = req.url
-    if (req.url === '/') {
-      fileName = 'index.html'
-    }
-
-    fs.readFile(path.join(__dirname, '/cycleanalysis', fileName), function (err, html) {
-      res.writeHead(200, { 'Content-Type': type })
-      res.end(html)
-    })
-  })
-  server.listen(port)
-}
 
 class CircularDependencyPlugin {
   constructor(options) {
@@ -50,7 +13,6 @@ class CircularDependencyPlugin {
       allowAsyncCycles: false,
       onDetected: false,
       cwd: process.cwd(),
-      analysisPort: 6600
     }, options)
 
     this.cycles = []
@@ -118,9 +80,22 @@ class CircularDependencyPlugin {
         try {
           if (plugin.cycles.length > 0) {
             plugin.cycles.unshift('source,target,type\n')
-            fs.writeFile(path.join(__dirname, 'cycleanalysis/files', 'analysis.csv'), plugin.cycles.join(''), (err) => {
+            const graphFolder = 'analysisgraph/'
+            fs.writeFile(path.join(__dirname, graphFolder + 'files', 'analysis.csv'), plugin.cycles.join(''), (err) => {
               if (!err) {
-                startServer(plugin.options.analysisPort)
+                const folderName = 'circularanalysis'
+                if (!fs.existsSync(path.join(cwd, folderName))) {
+                  fs.mkdirSync(path.join(cwd, folderName))
+                  fs.mkdirSync(path.join(cwd, folderName, 'files'))
+                }
+                fs.copyFileSync(path.join(__dirname, graphFolder + 'helper.js'), path.join(cwd, folderName, 'helper.js'))
+                fs.copyFileSync(path.join(__dirname, graphFolder + 'index.html'), path.join(cwd, folderName, 'index.html'))
+                fs.copyFileSync(path.join(__dirname, graphFolder + 'index.js'), path.join(cwd, folderName, 'index.js'))
+                fs.copyFileSync(path.join(__dirname, graphFolder + 'inspector.css'), path.join(cwd, folderName, 'inspector.css'))
+                fs.copyFileSync(path.join(__dirname, graphFolder + 'main.js'), path.join(cwd, folderName, 'main.js'))
+                fs.copyFileSync(path.join(__dirname, graphFolder + 'runtime.js'), path.join(cwd, folderName, 'runtime.js'))
+                fs.copyFileSync(path.join(__dirname, graphFolder + 'start.cjs'), path.join(cwd, folderName, 'start.cjs'))
+                fs.copyFileSync(path.join(__dirname, graphFolder + 'files/analysis.csv'), path.join(cwd, folderName, 'files', 'analysis.csv'))
               }
             })
           }
