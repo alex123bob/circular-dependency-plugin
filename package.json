@@ -21,7 +21,8 @@
     "test": "jest"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "cycleanalysis"
   ],
   "repository": {
     "type": "git",
