@@ -105,7 +105,7 @@ function _data(links) {
 }
 
 function _height() {
-  return 600;
+  return 800;
 }
 
 function _color(d3, types) {
@@ -157,7 +157,7 @@ export default function define(runtime, observer) {
     'FileAttachment',
     runtime.fileAttachments(name => fileAttachments.get(name))
   );
-  main.variable(observer()).define(['md'], _1);
+  // main.variable(observer()).define(['md'], _1);
   main.variable(observer()).define(['Swatches', 'color'], _2);
   main
     .variable(observer('chart'))

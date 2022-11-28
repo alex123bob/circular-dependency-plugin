@@ -1,4 +1,4 @@
-let path = require('path')
+const path = require('path')
 const http = require('http')
 const fs = require('fs')
 
